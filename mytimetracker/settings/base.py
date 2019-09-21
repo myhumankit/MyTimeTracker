@@ -98,6 +98,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
+LOGIN_URL = "/admin/login/"
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
