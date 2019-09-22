@@ -2,5 +2,4 @@
 __pycache__/
 db.sqlite3
 /mytimetracker/settings/production.py
-/static/
-/media/
+/site_media/

@@ -5,6 +5,10 @@ install:
 	venv/bin/python manage.py makemigrations
 	venv/bin/python manage.py migrate
 	venv/bin/python manage.py createsuperuser
+	mkdir -p site_media/media
+	mkdir -p site_media/static
+	venv/bin/python manage.py collectstatic
+
 
 .PHONY: serve
 serve:
@@ -14,8 +18,7 @@ serve:
 clear:
 	rm -f db.sqlite3
 	rm -rf venv
-	rm -rf media
-	rm -rf static
+	rm -rf site_media
 	find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 	find . -path "*/migrations/*.pyc" -delete
 	find . -path "*.pyc" -delete
@@ -23,4 +26,4 @@ clear:
 
 .PHONY: generate_secret_key
 generate_secret_key:
-	venv/bin/python myworkshop/utils/secret_key.py
+	venv/bin/python mytimetracker/utils/secret_key.py
