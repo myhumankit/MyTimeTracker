@@ -19,11 +19,11 @@ clear:
 	rm -f db.sqlite3
 	rm -rf venv
 	rm -rf site_media
-	find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-	find . -path "*/migrations/*.pyc" -delete
-	find . -path "*.pyc" -delete
-	find . -path "*/__pycache__" -delete
+	find . -path "*/migrations/*.py" -not -path "./venv*" -not -name "__init__.py" -delete
+	find . -path "*/migrations/*.pyc" -not -path "./venv*" -delete
+	find . -path "*.pyc" -not -path "./venv*" -delete
+	find . -path "*/__pycache__" -not -path "./venv*" -delete
 
 .PHONY: generate_secret_key
 generate_secret_key:
-	venv/bin/python mytimetracker/utils/secret_key.py
+	venv/bin/python utils/secret_key.py
