@@ -1,0 +1,48 @@
+{% extends "projects/base.html" %}
+
+{% block jumbotron_title %}Suivi des heures{% endblock %}
+{% block jumbotron_lead %}Liste des dernières activités enregistrées.{% endblock %}
+{% block jumbotron_footer %}
+<a class="btn btn-primary" href="admin/projects/activity/" role="button">Saisie des heures</a>
+{% endblock %}
+
+{% block content %}
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Date</th>
+            <th scope="col">Durée</th>
+            <th scope="col">Projet</th>
+            <th scope="col">Où ?</th>
+            <th scope="col">Commentaires</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for activity in object_list %}
+        <tr>
+            <th scope="row" class="text-center">
+                {% if activity.is_teleworking %}
+                <span class="text-info"><i class="fas fa-home"></i></span>
+                {% endif %}
+
+                {% if activity.is_business_trip %}
+                <span class="text-danger"><i class="fas fa-suitcase-rolling"></i></span>
+                {% endif %}
+            </th>
+            <td>{{ activity.date|date:"Y-m-d" }}</td>
+            <td>{{ activity.duration }}</td>
+            <td>{{ activity.project.title }}</td>
+            <td>{{ activity.location }}</td>
+            <td>
+                {% if activity.comment %}
+                {{ activity.comment }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

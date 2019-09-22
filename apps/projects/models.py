@@ -64,6 +64,14 @@ class Project(MPTTModel):
             t += activity.duration
         return t
 
+    @property
+    def level_text(self):
+        message = ""
+        if self.level:
+            for i in range(self.level):
+                message += "&nbsp;&nbsp;&nbsp;&nbsp;"
+        return message
+
     def __str__(self):
         return "{} (total : {})".format(self.title, heures(self.total))
 

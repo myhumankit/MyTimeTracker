@@ -1,0 +1,49 @@
+{% load i18n %}
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" role="navigation">
+    <a class="navbar-brand" href="{% url 'projects:activity_list' %}"><i class="fas fa-history"></i> My Time Tracker</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                {% url 'projects:project_list' as menu_url %}
+                <a class="nav-link{% if request.path == menu_url %} active{% endif %}" href="{% url 'projects:project_list' %}">Projets</a>
+            </li>
+            <li class="nav-item">
+                {% url 'projects:activity_list' as menu_url %}
+                <a class="nav-link{% if request.path == menu_url %} active{% endif %}" href="{% url 'projects:activity_list' %}">Activités</a>
+            </li>
+            <li class="nav-item">
+                {% url 'projects:leave_list' as menu_url %}
+                <a class="nav-link{% if request.path == menu_url %} active{% endif %}" href="{% url 'projects:leave_list' %}">Absences</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {% if user.first_name and user.last_name %}
+                    {{ user.first_name }} {{ user.last_name }}
+                    {% else %}
+                    {{ user.username }}
+                    {% endif %}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    {% if user.is_staff %}
+                    <a class="dropdown-item" href="{% url 'admin:index' %}">{% trans 'Admin' %}</a>
+                    <div class="dropdown-divider"></div>
+                    {% endif %}
+                    <a class="dropdown-item" href="{% url 'admin:password_change' %}">{% trans 'Change my password' %}</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                </div>
+            </li>
+            {% else %}
+            <form class="form-inline ml-auto">
+                <a class="btn btn-outline-secondary" href="{% url 'accounts:login' %}">{% trans 'Log in' %}</a>
+            </form>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

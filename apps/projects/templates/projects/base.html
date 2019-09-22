@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" dir="ltr" class="h-100">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>My Time Tracker</title>
+    {% comment %}<link rel="shortcut icon" type="image/png" href="{% url 'favicon' %}" />{% endcomment %}
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Font Awesome's Free CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" integrity="sha256-UzFD2WYH2U1dQpKDjjZK72VtPeWP50NoJjd26rnAdUI=" crossorigin="anonymous" />
+</head>
+
+<body class="d-flex flex-column h-100 {% block body_class %}{% endblock %}">
+    {% include 'projects/_nav.html' %}
+
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-4">{% block jumbotron_title %}My Time Tracker{% endblock %}</h1>
+            <p class="lead">{% block jumbotron_lead %}Outils de gestion des heures travaillées.{% endblock %}</p>
+            <hr class="my-4">
+            {% block jumbotron_footer %}{% endblock %}
+        </div>
+    </div>
+
+    <main role="main" class="flex-shrink-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    {% block content %}{% endblock %}
+                    {% if is_paginated %}
+                        {% include 'projects/_pagination_bar.html' %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js" integrity="sha256-fTuUgtT7O2rqoImwjrhDgbXTKUwyxxujIMRIK7TbuNU=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    {% block script %}{% endblock %}
+</body>
+
+</html>
