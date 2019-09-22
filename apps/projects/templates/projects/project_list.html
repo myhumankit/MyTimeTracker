@@ -49,12 +49,12 @@
         </div>
 
         <div class="paragraph">
-            <h2>Tâches</h2>
+            <h2>Projets</h2>
             <ul>
-                {% for task in object_list %}
-                <li>{{ task }}</li>
+                {% for project in object_list %}
+                <li>{{ project }}</li>
                 {% empty %}
-                <li>Aucune tâche encore ...</li>
+                <li>Aucun projet encore ...</li>
                 {% endfor %}
             </ul>
         </div>

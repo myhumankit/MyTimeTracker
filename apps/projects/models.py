@@ -35,7 +35,7 @@ def heures(td):
     return "h".join(str(td).split(":")[:2])
 
 
-class Task(MPTTModel):
+class Project(MPTTModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="création")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="mise à jour")
@@ -68,11 +68,11 @@ class Task(MPTTModel):
         return "{} (total : {})".format(self.title, heures(self.total))
 
     class Meta:
-        verbose_name = "tâche"
-        verbose_name_plural = "tâches"
+        verbose_name = "projet"
+        verbose_name_plural = "projets"
 
 
-simple_history.register(Task)
+simple_history.register(Project)
 
 
 class Activity(models.Model):
@@ -88,12 +88,12 @@ class Activity(models.Model):
         related_query_name="activity",
         verbose_name="utilisateur",
     )
-    task = models.ForeignKey(
-        Task,
+    project = models.ForeignKey(
+        Project,
         on_delete=models.PROTECT,
         related_name="activities",
         related_query_name="activity",
-        verbose_name="tâche",
+        verbose_name="projet",
     )
 
     date = models.DateField()
@@ -114,7 +114,7 @@ class Activity(models.Model):
     )
 
     def __str__(self):
-        return "{} ({} heures le {})".format(self.task, self.duration, self.date)
+        return "{} ({} heures le {})".format(self.project, self.duration, self.date)
 
     class Meta:
         verbose_name = "activité"

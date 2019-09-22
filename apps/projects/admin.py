@@ -1,7 +1,7 @@
 from django.contrib import admin
 from mptt.admin import DraggableMPTTAdmin
 from simple_history.admin import SimpleHistoryAdmin
-from projects.models import Location, Task, Activity, Leave
+from projects.models import Location, Project, Activity, Leave
 
 
 class LocationAdmin(SimpleHistoryAdmin):
@@ -29,7 +29,7 @@ class ActivityAdmin(SimpleHistoryAdmin):
     list_display = (
         "id",
         "user",
-        "task",
+        "project",
         "date",
         "duration",
         "is_teleworking",
@@ -54,7 +54,7 @@ class ActivityInline(admin.TabularInline):
     fields = (
         "id",
         "user",
-        "task",
+        "project",
         "date",
         "duration",
         "is_teleworking",
@@ -72,7 +72,7 @@ class ActivityInline(admin.TabularInline):
         return qs.filter(user=request.user)
 
 
-class TaskAdmin(SimpleHistoryAdmin, DraggableMPTTAdmin):
+class ProjectAdmin(SimpleHistoryAdmin, DraggableMPTTAdmin):
     list_display = ("tree_actions", "indented_title", "comment", "id")
     list_display_links = ("indented_title",)
     inlines = [ActivityInline]
@@ -86,6 +86,6 @@ class TaskAdmin(SimpleHistoryAdmin, DraggableMPTTAdmin):
 
 
 admin.site.register(Location, LocationAdmin)
-admin.site.register(Task, TaskAdmin)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Leave, LeaveAdmin)

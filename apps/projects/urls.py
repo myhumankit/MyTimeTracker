@@ -1,5 +1,5 @@
 from django.urls import path
 
-from projects.views import TaskListView
+from projects.views import ProjectListView
 
-urlpatterns = [path("", TaskListView.as_view(), name="task-list")]
+urlpatterns = [path("", ProjectListView.as_view(), name="project-list")]

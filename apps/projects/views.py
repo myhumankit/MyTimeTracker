@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import ListView
-from projects.models import Task
+from projects.models import Project
 
 
-class TaskListView(LoginRequiredMixin, ListView):
+class ProjectListView(LoginRequiredMixin, ListView):
 
-    model = Task
+    model = Project
     paginate_by = 5
