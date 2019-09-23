@@ -1,5 +1,6 @@
 /venv/
 __pycache__/
 db.sqlite3
+/mytimetracker/settings/__init__.py
 /mytimetracker/settings/production.py
 /site_media/
