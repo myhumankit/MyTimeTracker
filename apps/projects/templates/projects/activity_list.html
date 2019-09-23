@@ -10,7 +10,7 @@
 <table class="table table-striped">
     <thead class="thead-dark">
         <tr>
-            <th scope="col"></th>
+            <th scope="col" class="text-center"></th>
             <th scope="col">Date</th>
             <th scope="col">Durée</th>
             <th scope="col">Projet</th>
@@ -19,7 +19,17 @@
         </tr>
     </thead>
     <tbody>
-        {% for activity in object_list %}
+        {% regroup object_list by week as week_list %}
+        {% for week_object_list in week_list %}
+        <tr class="table-info">
+            <th scope="row" class="text-center">S{{ week_object_list.grouper }}</th>
+            <th scope="row"></th>
+            <th scope="row"></th>
+            <th scope="row"></th>
+            <th scope="row"></th>
+            <th scope="row"></th>
+        </tr>
+        {% for activity in week_object_list.list %}
         <tr>
             <th scope="row" class="text-center">
                 {% if activity.is_teleworking %}
@@ -42,6 +52,7 @@
                 {% endif %}
             </td>
         </tr>
+        {% endfor %}
         {% endfor %}
     </tbody>
 </table>

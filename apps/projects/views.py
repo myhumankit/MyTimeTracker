@@ -15,6 +15,8 @@ class ActivityListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = Activity.objects.filter(user=self.request.user)
+        for activity in queryset:
+            activity.week = activity.date.isocalendar()[1]
         return queryset
 
 
