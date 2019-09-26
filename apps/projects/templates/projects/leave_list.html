@@ -1,4 +1,5 @@
 {% extends "projects/base.html" %}
+{% load timedelta_extras %}
 
 {% block jumbotron_title %}Absences{% endblock %}
 {% block jumbotron_lead %}Liste des dernières absences enregistrées.{% endblock %}
@@ -10,18 +11,18 @@
 <table class="table table-striped">
     <thead class="thead-dark">
         <tr>
-            <th scope="col">Type</th>
-            <th scope="col">Date</th>
-            <th scope="col">Durée</th>
+            <th scope="col" class="text-center" width="15%">Type</th>
+            <th scope="col" class="text-center" width="15%">Date</th>
+            <th scope="col" class="text-center" width="15%">Durée</th>
             <th scope="col">Commentaires</th>
         </tr>
     </thead>
     <tbody>
         {% for leave in object_list %}
         <tr>
-            <th scope="row">{{ leave.get_type_display|capfirst }}</th>
-            <td>{{ leave.date|date:"Y-m-d" }}</td>
-            <td>{{ leave.duration }}</td>
+            <th scope="row" class="text-center">{{ leave.get_type_display|capfirst }}</th>
+            <td class="text-center">{{ leave.date|date:"Y-m-d" }}</td>
+            <td class="text-center">{{ leave.duration|date_format|safe }}</td>
             <td>
                 {% if leave.comment %}
                 {{ leave.comment }}

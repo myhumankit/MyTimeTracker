@@ -2,16 +2,16 @@
 {% load mptt_tags %}
 {% load timedelta_extras %}
 
-{% block jumbotron_title %}Projets{% endblock %}
-{% block jumbotron_lead %}Liste des projets.{% endblock %}
+{% block jumbotron_title %}{{ object_list.0.title }}{% endblock %}
+{% block jumbotron_lead %}{% if object_list.0.comment %}{{ object_list.0.comment }}{% endif %}{% endblock %}
 {% block jumbotron_footer %}
-<a class="btn btn-primary" href="admin/projects/project/" role="button"><i class="fas fa-edit"></i> Édition des projets</a>
+<a class="btn btn-primary" href="{% url 'projects:project_list' %}" role="button"><i class="fas fa-angle-left"></i> Retour aux projets</a>
 {% endblock %}
 
 {% block content %}
 <div class="alert alert-info" role="alert">
     <h4 class="alert-heading">Info</h4>
-    <p>Les temps indiqués tiennent compte des sous-projet : les données sont agrégées dans chaque projet principal.</p>
+    <p>Les temps indiqués ne tiennent compte que des sous-projets eux-mêmes.</p>
 </div>
 
 <table class="table table-striped">
@@ -28,7 +28,11 @@
         </tr>
     </thead>
     <tbody>
-        {% for project in object_list %}
+        <tr>
+            <th colspan="8" class="table-danger">Synthèse</th>
+        </tr>
+
+        {% with project=object_list.0 %}
         <tr>
             <td>{{ project.level_text|safe }} <a href="{% url 'projects:project_detail' project.id %}">{{ project.title }}</a></td>
             <td class="text-center">{{ project.total_allotted_time|date_format|safe }}</td>
@@ -37,6 +41,27 @@
             <td class="text-center">{{ project.total_remaining_time_allotted|date_format|safe }}</td>
             <td class="text-center">{{ project.total_remaining_time_needed|date_format|safe }}</td>
             <td class="text-center">{{ project.total_margin|date_format|safe }}</td>
+            <td>
+                {% if project.comment %}
+                {{ project.comment }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endwith %}
+
+        <tr>
+            <th colspan="8" class="table-warning">Détail</th>
+        </tr>
+
+        {% for project in object_list %}
+        <tr>
+            <td>{{ project.level_text|safe }} <a href="{% url 'projects:project_detail' project.id %}">{{ project.title }}</a></td>
+            <td class="text-center">{{ project.allotted_time|date_format|safe }}</td>
+            <td class="text-center">{{ project.duration|date_format|safe }}</td>
+            <td class="text-center">{{ project.progression }} %</td>
+            <td class="text-center">{{ project.remaining_time_allotted|date_format|safe }}</td>
+            <td class="text-center">{{ project.remaining_time_needed|date_format|safe }}</td>
+            <td class="text-center">{{ project.margin|date_format|safe }}</td>
             <td>
                 {% if project.comment %}
                 {{ project.comment }}

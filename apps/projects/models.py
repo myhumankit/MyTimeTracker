@@ -2,6 +2,7 @@ import uuid
 from datetime import timedelta
 from decimal import Decimal
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from mptt.models import MPTTModel, TreeForeignKey
 import simple_history
 from simple_history.models import HistoricalRecords
@@ -50,8 +51,40 @@ class Project(MPTTModel):
         null=True, blank=True, max_length=TEXT_MAX_LENGTH, verbose_name="commentaire"
     )
 
+    resources = models.ManyToManyField(
+        CustomUser,
+        through="Resource",
+        through_fields=("project", "user"),
+        related_name="projects",
+        related_query_name="project",
+        verbose_name="ressources",
+    )
+
+    @property
+    def allotted_time(self):
+        """
+            temps alloué au projet = somme des durées des ressources
+        """
+        t = timedelta()
+        for resource in Resource.objects.filter(project=self):
+            t += resource.duration
+        return t
+
+    @property
+    def total_allotted_time(self):
+        """
+            temps alloué cumulé pour le projet projet lui-même et de ses sous-projets
+        """
+        t = timedelta()
+        for project in self.get_descendants(include_self=True):
+            t += project.allotted_time
+        return t
+
     @property
     def duration(self):
+        """
+            temps déjà passé sur le projet
+        """
         t = timedelta()
         for activity in self.activities.all():
             t += activity.duration
@@ -59,6 +92,9 @@ class Project(MPTTModel):
 
     @property
     def total(self):
+        """
+            temps déjà passé sur le projet, sous-projets inclus
+        """
         t = timedelta()
         for activity in self.get_descendants(include_self=True):
             t += activity.duration
@@ -66,14 +102,75 @@ class Project(MPTTModel):
 
     @property
     def level_text(self):
+        """
+            texte pour faciliter le formatage d'un arbre
+        """
         message = ""
         if self.level:
             for i in range(self.level):
-                message += "&nbsp;&nbsp;&nbsp;&nbsp;"
+                message += "&nbsp;&bull;&nbsp;"
         return message
 
+    @property
+    def progression(self):
+        # dernière valeur de « progression » en date pour les objets « Activity » liés au projet, si elle existe
+        activities = Activity.objects.filter(
+            project=self, progression__isnull=False
+        ).order_by("-date")
+        try:
+            progression = activities[0].progression
+        except:
+            return 0
+
+        return progression
+
+    @property
+    def total_progression(self):
+        a = self.total.seconds
+        b = a + self.total_remaining_time_needed.seconds
+        if b == 0:
+            return 0
+        else:
+            return int(100 * a / b)
+
+    @property
+    def is_completed(self):
+        if self.progression == 100:
+            return True
+        else:
+            return False
+
+    @property
+    def remaining_time_allotted(self):
+        return self.allotted_time - self.duration
+
+    @property
+    def total_remaining_time_allotted(self):
+        return self.total_allotted_time - self.total
+
+    @property
+    def remaining_time_needed(self):
+        if self.progression == 0:
+            return self.allotted_time
+        return self.duration * (100 / self.progression - 1)
+
+    @property
+    def total_remaining_time_needed(self):
+        t = timedelta()
+        for project in self.get_descendants(include_self=True):
+            t += project.remaining_time_needed
+        return t
+
+    @property
+    def margin(self):
+        return self.remaining_time_allotted - self.remaining_time_needed
+
+    @property
+    def total_margin(self):
+        return self.total_remaining_time_allotted - self.total_remaining_time_needed
+
     def __str__(self):
-        return "{} (total : {})".format(self.title, heures(self.total))
+        return "{} ({}%)".format(self.title, self.total_progression)
 
     class Meta:
         verbose_name = "projet"
@@ -106,6 +203,13 @@ class Activity(models.Model):
 
     date = models.DateField()
     duration = models.DurationField(default=timedelta(hours=1), verbose_name="durée")
+
+    progression = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        verbose_name="avancement (%)",
+    )
 
     location = models.ForeignKey(
         Location,
@@ -182,4 +286,72 @@ class Leave(models.Model):
     class Meta:
         verbose_name = "absence"
         verbose_name_plural = "absences"
+        ordering = ("-date",)
+
+
+class Resource(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="création")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="mise à jour")
+    history = HistoricalRecords()
+
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.PROTECT, verbose_name="utilisateur"
+    )
+
+    project = models.ForeignKey(
+        Project, on_delete=models.PROTECT, verbose_name="projet"
+    )
+
+    # si la date est renseignée, cela bloque la capacité
+    date = models.DateField(null=True, blank=True)
+    duration = models.DurationField(default=DAILY_WORKING_TIME, verbose_name="durée")
+
+    comment = models.CharField(
+        null=True, blank=True, max_length=TEXT_MAX_LENGTH, verbose_name="commentaire"
+    )
+
+    def __str__(self):
+        if self.date:
+            return "{} heures de {} le {} sur le projet {})".format(
+                self.duration, self.user, self.date, self.project
+            )
+        else:
+            return "{} heures de {} sur le projet {})".format(
+                self.duration, self.user, self.project
+            )
+
+    class Meta:
+        verbose_name = "ressource"
+        verbose_name_plural = "ressources"
+        ordering = ("-date",)
+
+
+class Capacity(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="création")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="mise à jour")
+    history = HistoricalRecords()
+
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        related_name="capacities",
+        related_query_name="capacity",
+        verbose_name="utilisateur",
+    )
+
+    date = models.DateField()
+    duration = models.DurationField(default=DAILY_WORKING_TIME, verbose_name="durée")
+
+    comment = models.CharField(
+        null=True, blank=True, max_length=TEXT_MAX_LENGTH, verbose_name="commentaire"
+    )
+
+    def __str__(self):
+        return "{} heures le {}".format(self.duration, self.date)
+
+    class Meta:
+        verbose_name = "capacité"
+        verbose_name_plural = "capacités"
         ordering = ("-date",)

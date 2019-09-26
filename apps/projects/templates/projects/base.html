@@ -30,8 +30,8 @@
 
     <main role="main" class="flex-shrink-0">
         <div class="container">
-            <div class="row">
-                <div class="col-md-12">
+            <div class="row mb-5">
+                <div class="col-md-12 mb-5">
                     {% block content %}{% endblock %}
                     {% if is_paginated %}
                         {% include 'projects/_pagination_bar.html' %}

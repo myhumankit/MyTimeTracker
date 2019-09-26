@@ -1,14 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from accounts.models import CustomUser
+from projects.admin import CapacityInline
 
-# from simple_history.admin import SimpleHistoryAdmin
-from .models import CustomUser
 
-
-# class CustomUserAdmin(UserAdmin, SimpleHistoryAdmin):
 class CustomUserAdmin(UserAdmin):
     readonly_fields = ("updated_at",)
     model = CustomUser
+    inlines = [CapacityInline]
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

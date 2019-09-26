@@ -7,12 +7,12 @@
     <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                {% url 'projects:project_list' as menu_url %}
-                <a class="nav-link{% if request.path == menu_url %} active{% endif %}" href="{% url 'projects:project_list' %}">Projets</a>
+                {% url 'projects:activity_list' as menu_url %}
+                <a class="nav-link{% if request.path == menu_url %} active{% endif %}" href="{% url 'projects:activity_list' %}">Tableau de bord</a>
             </li>
             <li class="nav-item">
-                {% url 'projects:activity_list' as menu_url %}
-                <a class="nav-link{% if request.path == menu_url %} active{% endif %}" href="{% url 'projects:activity_list' %}">Activités</a>
+                {% url 'projects:project_list' as menu_url %}
+                <a class="nav-link{% if request.path == menu_url %} active{% endif %}" href="{% url 'projects:project_list' %}">Projets</a>
             </li>
             <li class="nav-item">
                 {% url 'projects:leave_list' as menu_url %}

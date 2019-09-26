@@ -1,20 +1,86 @@
 {% extends "projects/base.html" %}
+{% load timedelta_extras %}
 
-{% block jumbotron_title %}Suivi des heures{% endblock %}
+{% block jumbotron_title %}Tableau de bord{% endblock %}
 {% block jumbotron_lead %}Liste des dernières activités enregistrées.{% endblock %}
 {% block jumbotron_footer %}
 <a class="btn btn-primary" href="admin/projects/activity/" role="button">Saisie des heures</a>
 {% endblock %}
 
 {% block content %}
+<div class="alert alert-info mb-5" role="alert">
+    <h4 class="alert-heading"><i class="fas fa-info-circle"></i> Info</h4>
+    <p>
+        La charge de travail du {{ start_date }} au {{ end_date }} est estimée à {{ total_load|date_format|safe }}.<br>
+        La prochaine disponibilité est au {{ next_available_date }}.
+    </p>
+</div>
+
+<h2>Planning</h2>
+<table class="table mb-5">
+    <thead class="thead-dark">
+        <tr>
+            <th>Date</th>
+            {% for date in date_list %}
+            <th>{{ date|date:"D d" }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Capacité</th>
+            {% for capacity in capacity_list %}
+            <td>{{ capacity|date_format|safe }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Absences</th>
+            {% for leave in leave_list %}
+            <td>{{ leave|date_format|safe }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Occupé</th>
+            {% for booked in booked_list %}
+            <td>{{ booked|date_format|safe }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Dispo.</th>
+            {% for available in available_list %}
+            <td>{{ available|date_format|safe }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+
+<h2>Charge par projet</h2>
+<table class="table mb-5">
+    <thead class="thead-dark">
+        <tr>
+            <th>Projet</th>
+            <th>Charge</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for title, charge in project_list.items %}
+        <tr>
+            <td>{{ title }}</td>
+            <td>{{ charge|date_format|safe }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Relevé d'heures</h2>
 <table class="table table-striped">
     <thead class="thead-dark">
         <tr>
             <th scope="col" class="text-center"></th>
-            <th scope="col">Date</th>
-            <th scope="col">Durée</th>
-            <th scope="col">Projet</th>
-            <th scope="col">Où ?</th>
+            <th scope="col" class="text-center">Date</th>
+            <th scope="col" class="text-center">Durée</th>
+            <th scope="col" class="text-center">Projet</th>
+            <th scope="col" class="text-center">Où ?</th>
             <th scope="col">Commentaires</th>
         </tr>
     </thead>
@@ -40,10 +106,10 @@
                 <span class="text-danger"><i class="fas fa-suitcase-rolling"></i></span>
                 {% endif %}
             </th>
-            <td>{{ activity.date|date:"Y-m-d" }}</td>
-            <td>{{ activity.duration }}</td>
-            <td>{{ activity.project.title }}</td>
-            <td>{{ activity.location }}</td>
+            <td class="text-center">{{ activity.date|date:"Y-m-d" }}</td>
+            <td class="text-center">{{ activity.duration|date_format|safe }}</td>
+            <td class="text-center"><a href="{% url 'projects:project_detail' activity.project.id %}">{{ activity.project.title }}</a></td>
+            <td class="text-center">{{ activity.location }}</td>
             <td>
                 {% if activity.comment %}
                 {{ activity.comment }}
