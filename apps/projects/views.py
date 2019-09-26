@@ -62,6 +62,8 @@ class ActivityListView(LoginRequiredMixin, ListView):
             t_user = timedelta()
             for resource in Resource.objects.filter(project=project, user=user):
                 t_user += resource.duration
+                if resource.date:
+                    total_load -= resource.duration
 
             # quel rapport ?
             t_total = project.allotted_time
