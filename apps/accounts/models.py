@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -10,6 +11,10 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
 
     updated_at = models.DateTimeField(auto_now=True, verbose_name="mise à jour")
+
+    start_balance = models.DurationField(
+        default=timedelta(), verbose_name="solde de départ"
+    )
 
     REQUIRED_FIELDS = ["email"]
 

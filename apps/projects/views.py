@@ -133,6 +133,29 @@ class ActivityListView(LoginRequiredMixin, ListView):
         context["available_list"] = available_list
         context["project_list"] = projects
         context["next_available_date"] = next_available_date
+
+        # calcul du solde d'heures
+        the_day_before = start_date - timedelta(days=1)
+
+        work_capacity_time = timedelta()
+        for capacity in Capacity.objects.filter(user=user, date__lte=the_day_before):
+            work_capacity_time += capacity.duration
+
+        work_activity_time = timedelta()
+        for activity in Activity.objects.filter(user=user, date__lte=the_day_before):
+            work_activity_time += activity.duration
+
+        leave_time = timedelta()
+        for leave in Leave.objects.filter(user=user, date__lte=the_day_before).exclude(
+            type=Leave.RECUP
+        ):
+            leave_time += leave.duration
+
+        context["balance"] = (
+            user.start_balance + work_activity_time + leave_time - work_capacity_time
+        )
+        context["the_day_before"] = the_day_before
+
         return context
 
 

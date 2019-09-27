@@ -12,7 +12,8 @@
     <h4 class="alert-heading"><i class="fas fa-info-circle"></i> Info</h4>
     <p>
         La charge de travail du {{ start_date }} au {{ end_date }} est estimée à {{ total_load|date_format|safe }}.<br>
-        La prochaine disponibilité est au {{ next_available_date }}.
+        La prochaine disponibilité est au {{ next_available_date }}.<br>
+        Le solde d'heures au {{ the_day_before }} est de {{ balance|date_format|safe }}.
     </p>
 </div>
 
