@@ -112,6 +112,18 @@ class Project(MPTTModel):
         return message
 
     @property
+    def level_text_simple(self):
+        """
+            texte pour faciliter l'affichage du niveau
+        """
+        message = ""
+        if self.level:
+            for i in range(self.level):
+                message += "---"
+            message += " "
+        return message
+
+    @property
     def progression(self):
         # dernière valeur de « progression » en date pour les objets « Activity » liés au projet, si elle existe
         activities = Activity.objects.filter(
@@ -170,7 +182,9 @@ class Project(MPTTModel):
         return self.total_remaining_time_allotted - self.total_remaining_time_needed
 
     def __str__(self):
-        return "{} ({}%)".format(self.title, self.total_progression)
+        return "{}{} ({}%)".format(
+            self.level_text_simple, self.title, self.total_progression
+        )
 
     class Meta:
         verbose_name = "projet"
