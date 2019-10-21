@@ -17,6 +17,57 @@
     </p>
 </div>
 
+<h2>Relevé d'heures</h2>
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col" class="text-center"></th>
+            <th scope="col" class="text-center">Date</th>
+            <th scope="col" class="text-center">Durée</th>
+            <th scope="col" class="text-center">Projet</th>
+            <th scope="col" class="text-center">Où ?</th>
+            <th scope="col">Commentaires</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% regroup object_list by week as week_list %}
+        {% for week_object_list in week_list %}
+        <tr class="table-info">
+            <th scope="row" class="text-center">S{{ week_object_list.grouper }}</th>
+            <th scope="row"></th>
+            <th scope="row"></th>
+            <th scope="row"></th>
+            <th scope="row"></th>
+            <th scope="row"></th>
+        </tr>
+        {% for activity in week_object_list.list %}
+        <tr>
+            <th scope="row" class="text-center">
+                {% if activity.is_teleworking %}
+                <span class="text-info"><i class="fas fa-home"></i></span>
+                {% endif %}
+
+                {% if activity.is_business_trip %}
+                <span class="text-danger"><i class="fas fa-suitcase-rolling"></i></span>
+                {% endif %}
+            </th>
+            <td class="text-center">{{ activity.date|date:"Y-m-d" }}</td>
+            <td class="text-center">{{ activity.duration|date_format|safe }}</td>
+            <td class="text-center"><a href="{% url 'projects:project_detail' activity.project.id %}">{{ activity.project.title }}</a></td>
+            <td class="text-center">{{ activity.location }}</td>
+            <td>
+                {% if activity.comment %}
+                {{ activity.comment }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+
 <h2>Planning</h2>
 <table class="table mb-5">
     <thead class="thead-dark">
@@ -69,57 +120,6 @@
             <td>{{ title }}</td>
             <td>{{ charge|date_format|safe }}</td>
         </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<h2>Relevé d'heures</h2>
-<table class="table table-striped">
-    <thead class="thead-dark">
-        <tr>
-            <th scope="col" class="text-center"></th>
-            <th scope="col" class="text-center">Date</th>
-            <th scope="col" class="text-center">Durée</th>
-            <th scope="col" class="text-center">Projet</th>
-            <th scope="col" class="text-center">Où ?</th>
-            <th scope="col">Commentaires</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% regroup object_list by week as week_list %}
-        {% for week_object_list in week_list %}
-        <tr class="table-info">
-            <th scope="row" class="text-center">S{{ week_object_list.grouper }}</th>
-            <th scope="row"></th>
-            <th scope="row"></th>
-            <th scope="row"></th>
-            <th scope="row"></th>
-            <th scope="row"></th>
-        </tr>
-        {% for activity in week_object_list.list %}
-        <tr>
-            <th scope="row" class="text-center">
-                {% if activity.is_teleworking %}
-                <span class="text-info"><i class="fas fa-home"></i></span>
-                {% endif %}
-
-                {% if activity.is_business_trip %}
-                <span class="text-danger"><i class="fas fa-suitcase-rolling"></i></span>
-                {% endif %}
-            </th>
-            <td class="text-center">{{ activity.date|date:"Y-m-d" }}</td>
-            <td class="text-center">{{ activity.duration|date_format|safe }}</td>
-            <td class="text-center"><a href="{% url 'projects:project_detail' activity.project.id %}">{{ activity.project.title }}</a></td>
-            <td class="text-center">{{ activity.location }}</td>
-            <td>
-                {% if activity.comment %}
-                {{ activity.comment }}
-                {% else %}
-                -
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
         {% endfor %}
     </tbody>
 </table>
