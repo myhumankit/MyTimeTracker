@@ -51,7 +51,8 @@ class ProjectDetailByUserView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         project = get_object_or_404(Project, id=self.kwargs["pk"])
-        queryset = Activity.objects.filter(project=project)
+        user = get_object_or_404(CustomUser, username=self.kwargs["username"])
+        queryset = Activity.objects.filter(project=project, user=user)
         return queryset
 
     def get_context_data(self, **kwargs):

@@ -5,6 +5,7 @@
 {% block jumbotron_lead %}Liste des dernières activités enregistrées.{% endblock %}
 {% block jumbotron_footer %}
 <a class="btn btn-primary" href="admin/projects/activity/" role="button">Saisie des heures</a>
+<a class="btn btn-primary" href="{% url 'projects:project_list_by_user' user.username %}" role="button">Détails par projet</a>
 {% endblock %}
 
 {% block content %}
