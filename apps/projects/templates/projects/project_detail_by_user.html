@@ -1,0 +1,52 @@
+{% extends "projects/base.html" %}
+{% load timedelta_extras %}
+
+{% block jumbotron_title %}Activité de l'utilisateur « {{ current_user }} » sur le projet « {{ project.title }} »{% endblock %}
+{% block jumbotron_lead %}Retour aux projets de <a href="{% url 'projects:project_list_by_user' current_user.username %}">{{ current_user }}</a>{% endblock %}
+{% block jumbotron_footer %}
+{% endblock %}
+
+{% block content %}
+
+<h2>Relevé d'heures</h2>
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col" class="text-center"></th>
+            <th scope="col" class="text-center">Date</th>
+            <th scope="col" class="text-center">Durée</th>
+            <th scope="col" class="text-center">Projet</th>
+            <th scope="col" class="text-center">Où ?</th>
+            <th scope="col">Commentaires</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for activity in object_list %}
+        <tr>
+            <th scope="row" class="text-center">
+                {% if activity.is_teleworking %}
+                <span class="text-info"><i class="fas fa-home"></i></span>
+                {% endif %}
+
+                {% if activity.is_business_trip %}
+                <span class="text-danger"><i class="fas fa-suitcase-rolling"></i></span>
+                {% endif %}
+            </th>
+            <td class="text-center">{{ activity.date|date:"Y-m-d" }}</td>
+            <td class="text-center">{{ activity.duration|date_format|safe }}</td>
+            <td class="text-center"><a href="{% url 'projects:project_detail' activity.project.id %}">{{ activity.project.title }}</a></td>
+            <td class="text-center">{{ activity.location }}</td>
+            <td>
+                {% if activity.comment %}
+                {{ activity.comment }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}

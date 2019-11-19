@@ -90,7 +90,7 @@ class Project(MPTTModel):
             t += activity.duration
         return t
 
-    def duration_per_user(self, user):
+    def duration_by_user(self, user):
         """
             temps déjà passé sur le projet
         """
@@ -109,13 +109,13 @@ class Project(MPTTModel):
             t += activity.duration
         return t
 
-    def total_per_user(self, user):
+    def total_by_user(self, user):
         """
             temps déjà passé sur le projet, sous-projets inclus
         """
         t = timedelta()
         for activity in self.get_descendants(include_self=True):
-            t += activity.duration_per_user(user)
+            t += activity.duration_by_user(user)
         return t
 
     @property

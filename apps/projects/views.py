@@ -22,7 +22,7 @@ class ProjectListByUserView(LoginRequiredMixin, ListView):
         user = get_object_or_404(CustomUser, username=self.kwargs["username"])
         queryset = Project.objects.filter(activity__user=user).distinct()
         for project in queryset:
-            project.total_user = project.total_per_user(user)
+            project.duration_user = project.duration_by_user(user)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -42,6 +42,25 @@ class ProjectDetailView(LoginRequiredMixin, ListView):
             include_self=True
         )
         return queryset
+
+
+class ProjectDetailByUserView(LoginRequiredMixin, ListView):
+
+    model = Activity
+    template_name = "projects/project_detail_by_user.html"
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, id=self.kwargs["pk"])
+        queryset = Activity.objects.filter(project=project)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = get_object_or_404(CustomUser, username=self.kwargs["username"])
+        context["current_user"] = user
+        project = get_object_or_404(Project, id=self.kwargs["pk"])
+        context["project"] = project
+        return context
 
 
 class ActivityListView(LoginRequiredMixin, ListView):
