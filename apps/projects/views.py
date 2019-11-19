@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import ListView
 from django.shortcuts import get_object_or_404
+from accounts.models import CustomUser
 from projects.models import Activity, Capacity, Leave, Project, Resource
 
 
@@ -10,6 +11,25 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
     model = Project
     template_name = "projects/project_list.html"
+
+
+class ProjectListByUserView(LoginRequiredMixin, ListView):
+
+    model = Project
+    template_name = "projects/project_list_by_user.html"
+
+    def get_queryset(self):
+        user = get_object_or_404(CustomUser, username=self.kwargs["username"])
+        queryset = Project.objects.filter(activity__user=user).distinct()
+        for project in queryset:
+            project.total_user = project.total_per_user(user)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = get_object_or_404(CustomUser, username=self.kwargs["username"])
+        context["current_user"] = user
+        return context
 
 
 class ProjectDetailView(LoginRequiredMixin, ListView):

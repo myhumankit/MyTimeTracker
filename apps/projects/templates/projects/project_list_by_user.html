@@ -1,0 +1,53 @@
+{% extends "projects/base.html" %}
+{% load mptt_tags %}
+{% load timedelta_extras %}
+
+{% block jumbotron_title %}Projets de l'utilisateur « {{ current_user }} »{% endblock %}
+{% block jumbotron_lead %}Liste des projets.{% endblock %}
+{% block jumbotron_footer %}
+{% endblock %}
+
+{% block content %}
+<div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">Info</h4>
+    <p>Les temps indiqués tiennent compte des sous-projet : les données sont agrégées dans chaque projet principal.</p>
+</div>
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">Attention !</h4>
+    <p>Ne pas tenir compte des pourcentages d'avancement, il y a encore des bugs :)</p>
+</div>
+
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col" width="25%">Projet</th>
+            <th scope="col" class="text-center">Temps alloué</th>
+            <th scope="col" class="text-center">Temps passé</th>
+            <th scope="col" class="text-center">Avancement</th>
+            <th scope="col" class="text-center">Temps alloué restant</th>
+            <th scope="col" class="text-center">Temps necessaire</th>
+            <th scope="col" class="text-center">Marge/Perte estimée</th>
+            <th scope="col" width="25%">Commentaires</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in object_list %}
+        <tr>
+            <td>{{ project.level_text|safe }} <a href="{% url 'projects:project_detail' project.id %}">{{ project.title }}</a></td>
+            <td class="text-center">{{ project.total_allotted_time|date_format|safe }}</td>
+            <td class="text-center">{{ project.total_user|date_format|safe }}</td>
+            <td class="text-center">{{ project.total_progression }} %</td>
+            <td class="text-center">{{ project.total_remaining_time_allotted|date_format|safe }}</td>
+            <td class="text-center">{{ project.total_remaining_time_needed|date_format|safe }}</td>
+            <td class="text-center">{{ project.total_margin|date_format|safe }}</td>
+            <td>
+                {% if project.comment %}
+                {{ project.comment }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
